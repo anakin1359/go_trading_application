@@ -29,7 +29,15 @@ go.work
 /vendor/
 /Godeps/
 
+# log ignore
+*.log
+
 # bitFlyer api key & secret
 *.ini
 
 # End of https://www.toptal.com/developers/gitignore/api/go
+
+# ignore test
+# git rm --cached ${file-name}
+# git status --ignored
+# git ls-files --other --ignored --exclude-standard
