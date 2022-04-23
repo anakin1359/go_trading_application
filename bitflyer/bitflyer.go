@@ -126,6 +126,8 @@ func (api *APIClient) doRequest(method, urlPath string, query map[string]string,
 //     "available": 16.38
 //   }
 // ]
+
+// /v1/me/getbalance パラメータ定義
 type Balance struct {
 	CurrentCode string  `json:"currency_code"`
 	Amount      float64 `json:"amount"`    // いくら保有しているか
@@ -150,4 +152,81 @@ func (api *APIClient) GetBalance() ([]Balance, error) {
 	}
 
 	return balance, nil
+}
+
+// GET /v1/ticker -API Response Sample-
+// {
+// 	"product_code": "BTC_JPY",
+// 	"state": "RUNNING",
+// 	"timestamp": "2015-07-08T02:50:59.97",
+// 	"tick_id": 3579,
+// 	"best_bid": 30000,
+// 	"best_ask": 36640,
+// 	"best_bid_size": 0.1,
+// 	"best_ask_size": 5,
+// 	"total_bid_depth": 15.13,
+// 	"total_ask_depth": 20,
+// 	"market_bid_size": 0,
+// 	"market_ask_size": 0,
+// 	"ltp": 31690,
+// 	"volume": 16819.26,
+// 	"volume_by_product": 6819.26
+//   }
+
+// /v1/ticker パラメータ定義
+type Ticker struct {
+	ProductCode     string  	`json:"product_code"`
+	State           string  	`json:"state"`
+	Timestamp       string  	`json:"timestamp"`
+	TickID          int     	`json:"tick_id"`
+	BestBid         float64     `json:"best_bid"`
+	BestAsk         float64     `json:"best_ask"`
+	BestBidSize     float64 	`json:"best_bid_size"`
+	BestAskSize     float64     `json:"best_ask_size"`
+	TotalBidDepth   float64 	`json:"total_bid_depth"`
+	TotalAskDepth   float64     `json:"total_ask_depth"`
+	MarketBidSize   float64     `json:"market_bid_size"`
+	MarketAskSize   float64     `json:"market_ask_size"`
+	Ltp             float64     `json:"ltp"`
+	Volume          float64 	`json:"volume"`
+	VolumeByProduct float64 	`json:"volume_by_product"`
+}
+
+// structで定義した内容を利用して売りと買いの中間値を出力するメソッドを定義する
+func (t *Ticker) GetMidPrice() float64 {
+	return (t.BestBid + t.BestAsk) / 2
+}
+
+// 時刻形式をDB対応の形式(RFC3339)に変換させるメソッド
+func (t *Ticker) DateTime() time.Time {
+	// bitFlyerから返される時刻形式はZone情報が存在しない
+	// ex: 2018-10-12T01:17:15:353
+	t.Timestamp = "2018-09-27T02:01:59:6005284Z"
+	dateTime, err := time.Parse(time.RFC3339, t.Timestamp)
+	if err != nil {
+		log.Printf("action=DateTime, err=%s", err.Error())
+	}
+	return dateTime
+}
+
+// 時刻単位を調節するメソッド（ex: hh:mm:ss => hh:mm）
+func (t *Ticker) TruncateDateTime(duration time.Duration) time.Time {
+	return t.DateTime().Truncate(duration)
+}
+
+// /v1/ticker にリクエストする処理を定義
+func (api *APIClient) GetTicker(productCode string) (*Ticker, error) {
+	url := "ticker"
+	resp, err := api.doRequest("GET", url, map[string]string{"product_code": productCode}, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var ticker Ticker
+	err = json.Unmarshal(resp, &ticker)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ticker, nil
 }
