@@ -1,1 +1,23 @@
 2022/04/22 02:30:09 main.go:12: ===== [ TEST ] ======
+2022/04/23 13:03:02 main.go:12: ===== [ TEST ] ======
+2022/04/23 13:03:18 main.go:12: 
+===== [ TEST ] ======
+2022/04/23 13:03:31 main.go:12: 
+===== [ TEST ] ======
+2022/04/23 13:03:31 main.go:15: 
+===== [ TEST ] ======
+2022/04/23 13:03:40 main.go:12: 
+===== [ TEST ] ======
+2022/04/23 13:03:40 main.go:15: 
+===== [ TEST ] ======
+2022/04/23 13:03:52 main.go:12: 
+===== [ TEST ] ======
+2022/04/23 13:03:52 main.go:15: ===== [ TEST ] ======
+2022/04/23 13:05:01 main.go:13: ===== [ TEST ] ======
+2022/04/23 13:05:01 main.go:16: ===== [ TEST ] ======
+2022/04/23 13:05:29 main.go:13: 
+===== [ TEST ] ======
+2022/04/23 13:21:25 bitflyer.go:70: action=doRequest endpoint=https://api.bitflyer.com/v1/me/getbalance
+2022/04/23 13:21:25 bitflyer.go:35: 1650687685
+2022/04/23 13:21:30 bitflyer.go:138: url=me/getbalance resp=[{"currency_code":"JPY","amount":0.0,"available":0.0},{"currency_code":"BTC","amount":0.0,"available":0.0},{"currency_code":"BCH","amount":0.0,"available":0.0},{"currency_code":"ETH","amount":0.0,"available":0.0},{"currency_code":"ETC","amount":0.0,"available":0.0},{"currency_code":"LTC","amount":0.0,"available":0.0},{"currency_code":"MONA","amount":0.0,"available":0.0},{"currency_code":"LSK","amount":0.0,"available":0.0},{"currency_code":"XRP","amount":0.0,"available":0.0},{"currency_code":"BAT","amount":0.0,"available":0.0},{"currency_code":"XLM","amount":0.0,"available":0.0},{"currency_code":"XEM","amount":0.0,"available":0.0},{"currency_code":"XTZ","amount":0.0,"available":0.0},{"currency_code":"DOT","amount":0.0,"available":0.0},{"currency_code":"LINK","amount":0.0,"available":0.0},{"currency_code":"XYM","amount":0.0,"available":0.0}]
+2022/04/23 13:22:03 bitflyer.go:70: action=doRequest endpoint=https://api.bitflyer.com/v1/me/getbalance
