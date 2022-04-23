@@ -5,15 +5,29 @@ import (
 	"gotrading/bitflyer"
 	"gotrading/config"
 	"gotrading/utils"
-	"time"
 )
 
 func main() {
 	utils.LoggingSettings(config.Config.LogFile)
 	apiClient := bitflyer.New(config.Config.ApiKey, config.Config.ApiSecret)
-	ticker, _ := apiClient.GetTicker("BTC_USD")
-	fmt.Println(ticker)
-	fmt.Println(ticker.GetMidPrice())
-	fmt.Println(ticker.DateTime())
-	fmt.Println(ticker.TruncateDateTime(time.Hour))
+
+	order := &bitflyer.Order{
+		ProductCode:     config.Config.ProductCode,
+		ChildOrderType:  "MARKET", // 成行 => 指値の場合はLIMIT
+		Side:            "BUY",    // 購入 => 売却の場合はSELL
+		Size:            0.01,     // Bitcoinの数量
+		MinuteToExpires: 1,        // 分
+		TimeInForce:     "GTC",    // キャンセルするまで有効な注文
+	}
+	res, _ := apiClient.SendOrder(order)
+	fmt.Println(res.ChildOrderAcceptanceID)
+
+	// i := "JRF2022XXXX-XXXXXX-XXXXXX"
+	// i := "JRF20181012-144016-140584"
+	// params := map[string]string{
+	// 	"product_code":              config.Config.ProductCode,
+	// 	"child_order_acceptance_id": i,
+	// }
+	// r, _ := apiClient.ListOrder(params)
+	// fmt.Println(r)
 }
