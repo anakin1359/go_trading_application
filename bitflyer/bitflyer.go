@@ -5,6 +5,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -20,6 +21,12 @@ type APIClient struct {
 	key        string
 	secret     string
 	httpClient *http.Client
+}
+
+// configで定義したapi-key, api-secret を参照するコンストラクタ
+func New(key, secret string) *APIClient {
+	apiClient := &APIClient{key, secret, &http.Client{}}
+	return apiClient
 }
 
 // API Requestを実行する時のHeaderを定義
@@ -99,4 +106,48 @@ func (api *APIClient) doRequest(method, urlPath string, query map[string]string,
 
 	// 何も存在しなければbodyの情報とnilを返却する
 	return body, nil
+}
+
+// GET /v1/me/getbalance -API Response Sample-
+// [
+//   {
+//     "currency_code": "JPY",
+//     "amount": 1024078,
+//     "available": 508000
+//   },
+//   {
+//     "currency_code": "BTC",
+//     "amount": 10.24,
+//     "available": 4.12
+//   },
+//   {
+//     "currency_code": "ETH",
+//     "amount": 20.48,
+//     "available": 16.38
+//   }
+// ]
+type Balance struct {
+	CurrentCode string  `json:"currency_code"`
+	Amount      float64 `json:"amount"`    // いくら保有しているか
+	Available   float64 `json:"available"` // いくら使用するか
+}
+
+//  /v1/me/getbalance にリクエストする処理を定義
+func (api *APIClient) GetBalance() ([]Balance, error) {
+	url := "me/getbalance"
+	resp, err := api.doRequest("GET", url, map[string]string{}, nil)
+	log.Printf("url=%s resp=%s", url, string(resp))
+	if err != nil {
+		log.Printf("action=GetBalance err=%s", err.Error())
+		return nil, err
+	}
+
+	var balance []Balance
+	err = json.Unmarshal(resp, &balance)
+	if err != nil {
+		log.Printf("action=GetBalance err=%s", err.Error())
+		return nil, err
+	}
+
+	return balance, nil
 }

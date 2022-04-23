@@ -2,14 +2,20 @@ package main
 
 import (
 	"fmt"
+	"gotrading/bitflyer"
 	"gotrading/config"
 	"gotrading/utils"
-	"log"
 )
+
+// func main() {
+// 	str_prm := "\n===== [ TEST ] ======"
+// 	log.Println(str_prm)
+// 	fmt.Println(config.Config.ApiKey)
+// 	fmt.Println(config.Config.ApiSecret)
+// }
 
 func main() {
 	utils.LoggingSettings(config.Config.LogFile)
-	log.Println("===== [ TEST ] ======")
-	fmt.Println(config.Config.ApiKey)
-	fmt.Println(config.Config.ApiSecret)
+	apiClient := bitflyer.New(config.Config.ApiKey, config.Config.ApiSecret)
+	fmt.Println(apiClient.GetBalance())
 }
