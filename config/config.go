@@ -11,7 +11,7 @@ type ConfigList struct {
 	ApiKey      string
 	ApiSecret   string
 	LogFile     string
-	productCode string
+	ProductCode string
 }
 
 var Config ConfigList
@@ -27,6 +27,6 @@ func init() {
 		ApiKey:      cfg.Section("bitflyer").Key("api_key").String(),
 		ApiSecret:   cfg.Section("bitflyer").Key("api_secret").String(),
 		LogFile:     cfg.Section("gotrading").Key("log_file").String(),
-		productCode: cfg.Section("gotrading").Key("product_code").String(),
+		ProductCode: cfg.Section("gotrading").Key("product_code").String(),
 	}
 }
