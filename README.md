@@ -14,10 +14,14 @@
 |-- README.md
 |-- app
 |   |-- controllers
-|   |   `-- streamdata.go
-|   `-- models
-|       |-- base.go
-|       `-- candle.go
+|   |   |-- streamdata.go
+|   |   `-- webserver.go
+|   |-- models
+|   |   |-- base.go
+|   |   |-- candle.go
+|   |   `-- dfcandle.go
+|   `-- views
+|       `-- google.html
 |-- bitflyer
 |   `-- bitflyer.go
 |-- config
