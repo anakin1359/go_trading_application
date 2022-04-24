@@ -30,27 +30,26 @@ func init() {
 	}
 
 	// DB接続時にtableが存在しない場合は生成するQueryを定義
-	cmd1 := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
-						time DATETIME PRIMARY KEY NOT NULL,
-						product_code STRING,
-						side STRING,
-						price FLOAT,
-						size FLOAT)`, tableNameSignalEvents)
-	DbConnection.Exec(cmd1)
-	// ins_tbl, err := DbConnection.Exec(cmd1)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	cmd := fmt.Sprintf(`
+        CREATE TABLE IF NOT EXISTS %s (
+            time DATETIME PRIMARY KEY NOT NULL,
+            product_code STRING,
+            side STRING,
+            price FLOAT,
+            size FLOAT)`, tableNameSignalEvents)
+	DbConnection.Exec(cmd)
 
 	for _, duration := range config.Config.Durations {
 		// tableName => ex) BTC_JPY_1m
 		tableName := GetCandleTableName(config.Config.ProductCode, duration)
-		cmd2 := fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
-							time DATETIME PRIMARY KEY NOT NULL,
-							open FLOAT,
-							close FLOAT,
-							low open FLOAT,
-							volume FLOAT)`, tableName)
-		DbConnection.Exec(cmd2)
+		c := fmt.Sprintf(`
+            CREATE TABLE IF NOT EXISTS %s (
+            time DATETIME PRIMARY KEY NOT NULL,
+            open FLOAT,
+            close FLOAT,
+            high FLOAT,
+            low FLOAT,
+			volume FLOAT)`, tableName)
+		DbConnection.Exec(c)
 	}
 }
