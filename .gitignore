@@ -32,6 +32,10 @@ go.work
 # log ignore
 *.log
 
+# database ignore
+*.sql
+*sql-journal
+
 # bitFlyer api key & secret
 *.ini
 
