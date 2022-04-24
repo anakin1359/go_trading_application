@@ -7,6 +7,7 @@
 |bitFlyer API Document |https://lightning.bitflyer.com/docs?lang=ja | bitFlyerのAPIドキュメント |
 |Google Charts | https://developers.google.com/chart | グラフ描画 ([Candlestick Charts](https://developers.google.com/chart/interactive/docs/gallery/candlestickchart)を使用) |
 <br>
+
 ## project
 ---
 ```
