@@ -98,3 +98,43 @@ func CreateCandleWithDuration(ticker bitflyer.Ticker, productCode string, durati
 	currentCandle.Save()
 	return false
 }
+
+// dfcandle.goで定義した情報を全て取得してデータを成形する処理を定義
+func GetAllCandle(productCode string, duration time.Duration, limit int) (dfCandle *DataFrameCandle, err error) {
+	// base.goで定義したproductCodeと時刻情報を連結したテーブル名を取得する関数を使用してテーブル名を定義
+	tableName := GetCandleTableName(productCode, duration)
+
+	// SQLクエリ(tableNameのテーブルから指定した情報を降順に並び替え、且つ取得上限ありで取得し、取得した情報を昇順で並び変えて表示)
+	cmd := fmt.Sprintf(`SELECT * FROM (
+		SELECT time, open, close, high, low, volume FROM %s ORDER BY time DESC LIMIT ?
+		) ORDER BY time ASC;`, tableName)
+	rows, err := DbConnection.Query(cmd, limit)
+	if err != nil {
+		return
+	}
+
+	// 処理の最後に必ずデータベースへの接続を切断
+	defer rows.Close()
+
+	// DataFrameCandleポインタを呼び出してdfCandleに格納、productCodeとdurationを格納
+	dfCandle = &DataFrameCandle{}
+	dfCandle.ProductCode = productCode
+	dfCandle.Duration = duration
+
+	// Nextメソッドを使用してデータベース接続処理を行う(処理が成功したらTrue、失敗したらFalseを返す)
+	for rows.Next() {
+		var candle Candle
+		candle.ProductCode = productCode
+		candle.Duration = duration
+
+		// Scanメソッドを使用して各項目の情報をデータベースから1行ずつ取得
+		rows.Scan(&candle.Time, &candle.Open, &candle.Close, &candle.High, &candle.Low, &candle.Volume)
+		dfCandle.Candles = append(dfCandle.Candles, candle)
+	}
+	err = rows.Err()
+	if err != nil {
+		return
+	}
+
+	return dfCandle, nil
+}
