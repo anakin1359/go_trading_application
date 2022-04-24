@@ -6,7 +6,7 @@
 |bitFlyer Lightning | https://lightning.bitflyer.com/trade | bitflyer trader chart |
 |bitFlyer API Document |https://lightning.bitflyer.com/docs?lang=ja | bitFlyerのAPIドキュメント |
 |Google Charts | https://developers.google.com/chart | グラフ描画 ([Candlestick Charts](https://developers.google.com/chart/interactive/docs/gallery/candlestickchart)を使用) |
-
+<br>
 ## project
 ---
 ```
@@ -35,6 +35,7 @@
 `-- utils
     `-- logging.go
 ```
+<br>
 
 ## config.ini
 ---
@@ -58,21 +59,34 @@ driver = sqlite3
 [web]
 port = 8080
 ```
-## browser access
+<br>
+
+## browser access (chart)
 ---
 ```
 http://localhost:8080/chart/
 ```
+<br>
+
+## browser access (ajax)
+---
+```
+http://localhost:8080/api/candle/?product_code={product_code}&duration={1s/m/h}&limit={1-1000}
+```
+ex)
+```
+http://localhost:8080/api/candle/?product_code=BTC_JPY&duration=1m&limit=1
+```
+<br>
 
 ## sqlite exec
 ---
 ```
 $ go run main.go
-&{0 {stockdata.sql 0xc0000c40c0} 0 {0 0} [0xc000116000] map[] 0 1 0xc00008e0c0 false map[0xc000116000:map[0xc000116000:true]] map[] 0 0 0 0 <nil> 0 0 0 0 0x4deae0}
-2022/04/24 21:04:44 bitflyer.go:244: connecting to wss://ws.lightstream.bitflyer.com/json-rpc
-2022/04/24 21:04:52 streamdata.go:16: action=StreamIngestionData, {BTC_JPY 2022-04-24T12:04:52.7816596Z 8151627 5.089392e+06 5.09192e+06 0.1 0.02 454.42344649 736.80110316 5.088659e+06 533.16792366 533.16792366}
-2022/04/24 21:04:52 streamdata.go:16: action=StreamIngestionData, {BTC_JPY 2022-04-24T12:04:53.2556747Z 8151636 5.089758e+06 5.092459e+06 0.006 0.02 452.51944649 736.059523 5.088659e+06 533.16792366 533.16792366}
-2022/04/24 21:04:53 streamdata.go:16: action=StreamIngestionData, {BTC_JPY 2022-04-24T12:04:53.8921046Z 8151649 5.089955e+06 5.092459e+06 0.011 0.02 452.53044649 732.3163666 5.088659e+06 533.16792366 533.16792366}
+2022/04/25 01:51:01 bitflyer.go:244: connecting to wss://ws.lightstream.bitflyer.com/json-rpc
+2022/04/25 01:51:02 streamdata.go:17: action=StreamIngestionData, {BTC_JPY 2022-04-24T16:50:59.8864462Z 8279633 5.068835e+06 5.070359e+06 0.26 0.021 446.02196243 833.55624702 5.068883e+06 630.37817952 630.37817952}
+2022/04/25 01:51:02 streamdata.go:17: action=StreamIngestionData, {BTC_JPY 2022-04-24T16:51:00.4623748Z 8279650 5.068835e+06 5.07035e+06 0.26 0.02361368 449.01806243 834.1174607 5.068883e+06 630.37817952 630.37817952}
+2022/04/25 01:51:03 streamdata.go:17: action=StreamIngestionData, {BTC_JPY 2022-04-24T16:51:01.0734443Z 8279655 5.068835e+06 5.07035e+06 0.26 0.02361368 449.01806243 833.6805607 5.068883e+06 630.37817952 630.37817952}
 ```
 ```
 $ ls -lha ./stockdata.sql
@@ -80,11 +94,7 @@ $ ls -lha ./stockdata.sql
 ```
 ```
 $ which sqlite3
-/c/Users/${username}/anaconda3/Library/bin/sqlite3
-or
-/usr/bin/sqlite3
-or
-/usr/local/bin/sqlite3
+/c/Users/${username}/anaconda3/Library/bin/sqlite3 or /usr/bin/sqlite3 or /usr/local/bin/sqlite3
 ```
 ```
 $ sqlite3 stockdata.sql
