@@ -14,7 +14,7 @@ var templates = template.Must(template.ParseFiles("./app/views/google.html"))
 func viewChartHandler(w http.ResponseWriter, r *http.Request) {
 	// dfcandle.goで定義したGetAllCandle関数に渡す引数を定義
 	limit := 100
-	duration := "1s"
+	duration := "1m" // 1s or 1m or 1h
 	durationTime := config.Config.Durations[duration]
 
 	// GetAllCandle関数に上記で定義した引数を渡して得られたデータをdfに格納
