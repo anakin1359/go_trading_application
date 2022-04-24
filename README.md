@@ -2,20 +2,23 @@
 ---
 ```
 .
-├── README.md
-├── app
-│   └── models
-│       └── base.go
-├── bitflyer
-│   └── bitflyer.go
-├── config
-│   └── config.go
-├── config.ini
-├── go.mod
-├── go.sum
-├── main.go
-└── utils
-    └── logging.go
+|-- README.md
+|-- app
+|   `-- models
+|       |-- base.go
+|       `-- candle.go
+|-- bitflyer
+|   `-- bitflyer.go
+|-- config
+|   `-- config.go
+|-- config.ini
+|-- go.mod
+|-- go.sum
+|-- gotrading.log
+|-- main.go
+|-- stockdata.sql
+`-- utils
+    `-- logging.go
 ```
 
 ## config.ini
