@@ -1,9 +1,20 @@
+## tools
+---
+| ツール名 | URL | 詳細 |
+|:---|:---|:---|
+|bitFlyer | https://developers.google.com/chart |bitFlyer | bitflyer top-page |
+|bitFlyer Lightning | https://lightning.bitflyer.com/trade | bitflyer trader chart |
+|bitFlyer API Document |https://lightning.bitflyer.com/docs?lang=ja | bitFlyerのAPIドキュメント |
+|Google Charts | https://developers.google.com/chart | グラフ描画 ([Candlestick Charts](https://developers.google.com/chart/interactive/docs/gallery/candlestickchart)を使用) |
+
 ## project
 ---
 ```
 .
 |-- README.md
 |-- app
+|   |-- controllers
+|   |   `-- streamdata.go
 |   `-- models
 |       |-- base.go
 |       `-- candle.go
@@ -43,6 +54,11 @@ driver = sqlite3
 [web]
 port = 8080
 ```
+## browser access
+---
+```
+http://localhost:8080/chart/
+```
 
 ## sqlite exec
 ---
@@ -73,11 +89,11 @@ Enter ".help" for usage hints.
 ```
 ```
 sqlite> .tables
-BTC_JPY_1h0m0s  BTC_JPY_1m0s    BTC_JPY_1s      signal_events 
+BTC_JPY_1h0m0s  BTC_JPY_1m0s    BTC_JPY_1s      signal_events
 ```
 ```
 sqlite> select * from BTC_JPY_1s;
-2022-04-24T11:49:25Z|5093062.5|5093062.5|5093062.5|5093062.5|528.00569753 
-2022-04-24T11:49:26Z|5093062.5|5093062.5|5093062.5|5093062.5|528.00569753 
+2022-04-24T11:49:25Z|5093062.5|5093062.5|5093062.5|5093062.5|528.00569753
+2022-04-24T11:49:26Z|5093062.5|5093062.5|5093062.5|5093062.5|528.00569753
 2022-04-24T11:49:27Z|5093062.5|5093062.5|5093062.5|5093062.5|1056.01139506
 ```
