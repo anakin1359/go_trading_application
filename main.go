@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"gotrading/app/controllers"
 	"gotrading/app/models"
 	"gotrading/config"
 	"gotrading/utils"
@@ -9,7 +10,8 @@ import (
 
 func main() {
 	utils.LoggingSettings(config.Config.LogFile)
-	fmt.Println((models.DbConnection))
+	fmt.Println(models.DbConnection)
+	controllers.StreamIngestionData()
 }
 
 // bitFlyerでの自動売買処理は実行時以外は無効化

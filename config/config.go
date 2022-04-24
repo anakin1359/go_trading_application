@@ -27,7 +27,7 @@ func init() {
 	cfg, err := ini.Load("config.ini")
 	if err != nil {
 		log.Printf("Failed to read file: %v", err)
-		os.Exit(1) // configが見つからなかった場合はエラーコード1で抜ける
+		os.Exit(1)
 	}
 
 	durations := map[string]time.Duration{
@@ -37,11 +37,10 @@ func init() {
 	}
 
 	Config = ConfigList{
-		ApiKey:      cfg.Section("bitflyer").Key("api_key").String(),
-		ApiSecret:   cfg.Section("bitflyer").Key("api_secret").String(),
-		LogFile:     cfg.Section("gotrading").Key("log_file").String(),
-		ProductCode: cfg.Section("gotrading").Key("product_code").String(),
-
+		ApiKey:        cfg.Section("bitflyer").Key("api_key").String(),
+		ApiSecret:     cfg.Section("bitflyer").Key("api_secret").String(),
+		LogFile:       cfg.Section("gotrading").Key("log_file").String(),
+		ProductCode:   cfg.Section("gotrading").Key("product_code").String(),
 		Durations:     durations,
 		TradeDuration: durations[cfg.Section("gotrading").Key("trade_duration").String()],
 		DbName:        cfg.Section("db").Key("name").String(),

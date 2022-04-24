@@ -35,8 +35,6 @@ func New(key, secret string) *APIClient {
 // API Requestを実行する時のHeaderを定義
 func (api APIClient) header(method, endpoint string, body []byte) map[string]string {
 	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
-	log.Println(timestamp)
-
 	message := timestamp + method + endpoint + string(body)
 
 	// Header情報は bitFlyer Lightning Document を参照
@@ -179,7 +177,6 @@ func (api *APIClient) GetBalance() ([]Balance, error) {
 // /v1/ticker パラメータ定義
 type Ticker struct {
 	ProductCode     string  `json:"product_code"`
-	State           string  `json:"state"`
 	Timestamp       string  `json:"timestamp"`
 	TickID          int     `json:"tick_id"`
 	BestBid         float64 `json:"best_bid"`
@@ -188,8 +185,6 @@ type Ticker struct {
 	BestAskSize     float64 `json:"best_ask_size"`
 	TotalBidDepth   float64 `json:"total_bid_depth"`
 	TotalAskDepth   float64 `json:"total_ask_depth"`
-	MarketBidSize   float64 `json:"market_bid_size"`
-	MarketAskSize   float64 `json:"market_ask_size"`
 	Ltp             float64 `json:"ltp"`
 	Volume          float64 `json:"volume"`
 	VolumeByProduct float64 `json:"volume_by_product"`
@@ -204,7 +199,6 @@ func (t *Ticker) GetMidPrice() float64 {
 func (t *Ticker) DateTime() time.Time {
 	dateTime, err := time.Parse(time.RFC3339, t.Timestamp)
 	if err != nil {
-		fmt.Print("ここでエラーになっているが一旦スキップする")
 		log.Printf("action=DateTime, err=%s", err.Error())
 	}
 	return dateTime
@@ -338,6 +332,7 @@ func (api *APIClient) SendOrder(order *Order) (*ResponseSendChildOrder, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &response, nil
 }
 
