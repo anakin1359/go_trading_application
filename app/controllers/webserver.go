@@ -104,6 +104,32 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 	// 想定外の処理を全て拾った後に、各項目のデフォルト値を「df」に代入
 	df, _ := models.GetAllCandle(productCode, durationTime, limit)
 
+	// フロントからリクエストが来た場合SMAをdfに追加
+	sma := r.URL.Query().Get("sma")
+	// smaが空でない場合は3のSMAのデータがフロントから送る
+	if sma != "" {
+		strSmaPeriod1 := r.URL.Query().Get("smaPeriod1")
+		strSmaPeriod2 := r.URL.Query().Get("smaPeriod2")
+		strSmaPeriod3 := r.URL.Query().Get("smaPeriod3")
+
+		// default値の設定(strSmaPeriod1が空、またはエラーではない、または終値が0以下の場合)
+		period1, err := strconv.Atoi(strSmaPeriod1)
+		if strSmaPeriod1 == "" || err != nil || period1 < 0 {
+			period1 = 7
+		}
+		period2, err := strconv.Atoi(strSmaPeriod2)
+		if strSmaPeriod2 == "" || err != nil || period2 < 0 {
+			period2 = 14
+		}
+		period3, err := strconv.Atoi(strSmaPeriod3)
+		if strSmaPeriod3 == "" || err != nil || period3 < 0 {
+			period3 = 50
+		}
+		df.AddSma(period1)
+		df.AddSma(period2)
+		df.AddSma(period3)
+	}
+
 	// 「df」を使用して構造体をJSONに変換
 	js, err := json.Marshal(df)
 	if err != nil {

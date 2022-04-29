@@ -1,12 +1,23 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/markcheno/go-talib"
+)
 
 // データフレームの構造体を定義
 type DataFrameCandle struct {
 	ProductCode string        `json:"product_code"`
 	Duration    time.Duration `json:"duration"`
 	Candles     []Candle      `json:"candles"`
+	Smas        []Sma         `json:"smas,omitempty"`
+}
+
+// 単純移動平均線(simple-moving-average)
+type Sma struct {
+	Period int       `json:"period,omitempty"` // Period: 終値, omitempty: jsonに変換した際に数値が0（または値が何も入っていない状態）の場合は省略する
+	Values []float64 `json:"values,omitempty"`
 }
 
 // []Candle配列にデータを格納し、Candle Chartで表示するための設定
@@ -68,4 +79,16 @@ func (df *DataFrameCandle) Volumes() []float64 {
 		s[i] = candle.Volume
 	}
 	return s
+}
+
+// 単純移動平均線(SMA)のデータ取得処理
+func (df *DataFrameCandle) AddSma(period int) bool {
+	if len(df.Candles) > period {
+		df.Smas = append(df.Smas, Sma{
+			Period: period,
+			Values: talib.Sma(df.Closes(), period),
+		})
+		return true
+	}
+	return false
 }
