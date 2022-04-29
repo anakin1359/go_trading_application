@@ -12,19 +12,21 @@ import (
 	"strconv"
 )
 
-var templates = template.Must(template.ParseFiles("./app/views/google.html"))
+// var templates = template.Must(template.ParseFiles("./app/views/google.html"))
+var templates = template.Must(template.ParseFiles("app/views/chart.html"))
 
 // Viewを表示する関数を定義
 func viewChartHandler(w http.ResponseWriter, r *http.Request) {
-	// dfcandle.goで定義したGetAllCandle関数に渡す引数を定義
-	limit := 100
-	duration := "1m" // 1s or 1m or 1h
-	durationTime := config.Config.Durations[duration]
+	// jqueryによりフロントから受け取る実装に変更したため下記コードは不要
+	// // dfcandle.goで定義したGetAllCandle関数に渡す引数を定義
+	// limit := 100
+	// duration := "1m" // 1s or 1m or 1h
+	// durationTime := config.Config.Durations[duration]
 
-	// GetAllCandle関数に上記で定義した引数を渡して得られたデータをdfに格納
-	df, _ := models.GetAllCandle(config.Config.ProductCode, durationTime, limit)
+	// // GetAllCandle関数に上記で定義した引数を渡して得られたデータをdfに格納
+	// df, _ := models.GetAllCandle(config.Config.ProductCode, durationTime, limit)
 
-	err := templates.ExecuteTemplate(w, "google.html", df.Candles)
+	err := templates.ExecuteTemplate(w, "chart.html", nil)
 	// エラーの場合はInternalServerErrorを表示
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -1,11 +1,25 @@
+サイト## develop environment
+---
+| 項目 | 種別 |go Lang version |
+|:---|:---|:---|
+| OS | Windows10 |go version go1.18 windows/amd64|
+| OS | Ubuntu 18.04.5 LTS (Bionic Beaver) |go version go1.18.1 linux/amd64|
+<br>
+
 ## tools
 ---
 | ツール名 | URL | 詳細 |
 |:---|:---|:---|
-|bitFlyer | https://developers.google.com/chart |bitFlyer | bitflyer top-page |
-|bitFlyer Lightning | https://lightning.bitflyer.com/trade | bitflyer trader chart |
-|bitFlyer API Document |https://lightning.bitflyer.com/docs?lang=ja | bitFlyerのAPIドキュメント |
-|Google Charts | https://developers.google.com/chart | グラフ描画 ([Candlestick Charts](https://developers.google.com/chart/interactive/docs/gallery/candlestickchart)を使用) |
+| bitFlyer | https://developers.google.com/chart |bitFlyer | bitflyer top-page |
+| bitFlyer Lightning | https://lightning.bitflyer.com/trade | bitflyer trader chart |
+| bitFlyer API Document |https://lightning.bitflyer.com/docs?lang=ja | bitFlyerのAPIドキュメント |
+| Google Charts (Candlestick) | https://developers.google.com/chart | ロウソク型チャート ([Candlestick Charts](https://developers.google.com/chart/interactive/docs/gallery/candlestickchart)を使用) |
+| Google Charts (Combo) | https://developers.google.com/chart | 複数種類グラフ使用 ([Combo Charts](https://developers.google.com/chart/interactive/docs/gallery/combochart)を使用) |
+| Google Charts (graph Control) | https://developers.google.com/chart | グラフ操作 ([Controls and Dashboards](https://developers.google.com/chart/interactive/docs/gallery/controls)を使用) |
+| jQuery | https://jquery.com/ | jquery チュートリアルサイト |
+| jQuery | https://www.w3schools.com/jquery/default.asp | jquery サンプルコード |
+
+
 <br>
 
 ## project
