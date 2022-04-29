@@ -12,6 +12,7 @@ type DataFrameCandle struct {
 	Duration    time.Duration `json:"duration"`
 	Candles     []Candle      `json:"candles"`
 	Smas        []Sma         `json:"smas,omitempty"`
+	Emas        []Ema         `json:"emas,omitempty"`
 }
 
 // 単純移動平均線(simple-moving-average)
@@ -20,8 +21,13 @@ type Sma struct {
 	Values []float64 `json:"values,omitempty"`
 }
 
-// []Candle配列にデータを格納し、Candle Chartで表示するための設定
+// 指数平滑移動平均(exponential-moving-average)
+type Ema struct {
+	Period int       `json:"period,omitempty"`
+	Values []float64 `json:"values,omitempty"`
+}
 
+// []Candle配列にデータを格納し、Candle Chartで表示するための設定
 // 時刻情報の取得処理を定義
 func (df *DataFrameCandle) Times() []time.Time {
 	// candle chartで出力するための情報をスライスで定義
@@ -87,6 +93,18 @@ func (df *DataFrameCandle) AddSma(period int) bool {
 		df.Smas = append(df.Smas, Sma{
 			Period: period,
 			Values: talib.Sma(df.Closes(), period),
+		})
+		return true
+	}
+	return false
+}
+
+// 指数平滑移動平均(EMA)のデータ取得処理
+func (df *DataFrameCandle) AddEma(period int) bool {
+	if len(df.Candles) > period {
+		df.Emas = append(df.Emas, Ema{
+			Period: period,
+			Values: talib.Ema(df.Closes(), period),
 		})
 		return true
 	}
