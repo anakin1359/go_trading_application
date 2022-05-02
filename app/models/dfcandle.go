@@ -13,6 +13,7 @@ type DataFrameCandle struct {
 	Candles     []Candle      `json:"candles"`
 	Smas        []Sma         `json:"smas,omitempty"`
 	Emas        []Ema         `json:"emas,omitempty"`
+	BBands      *BBands       `json:"bbands,omitempty"` // ポインタで設定(空のJSONを返却することがあるため)
 }
 
 // 単純移動平均線(simple-moving-average)
@@ -25,6 +26,15 @@ type Sma struct {
 type Ema struct {
 	Period int       `json:"period,omitempty"`
 	Values []float64 `json:"values,omitempty"`
+}
+
+// ボリンジャーバンド(bollinger-band)
+type BBands struct {
+	N    int       `json:"n,omitempty"`    // 日数
+	K    float64   `json:"k,omitempty"`    // 標準偏差(Σ)
+	Up   []float64 `json:"up,omitempty"`   // 移動平均線 +Σ
+	Mid  []float64 `json:"mid,omitempty"`  // 移動平均線
+	Down []float64 `json:"down,omitempty"` // 移動平均線 -Σ
 }
 
 // []Candle配列にデータを格納し、Candle Chartで表示するための設定
@@ -106,6 +116,22 @@ func (df *DataFrameCandle) AddEma(period int) bool {
 			Period: period,
 			Values: talib.Ema(df.Closes(), period),
 		})
+		return true
+	}
+	return false
+}
+
+// ボリンジャーバンド(bollinger-band)のデータ取得処理
+func (df *DataFrameCandle) AddBBands(n int, k float64) bool {
+	if n <= len(df.Closes()) {
+		up, mid, down := talib.BBands(df.Closes(), n, k, k, 0)
+		df.BBands = &BBands{
+			N:    n,
+			K:    k,
+			Up:   up,
+			Mid:  mid,
+			Down: down,
+		}
 		return true
 	}
 	return false

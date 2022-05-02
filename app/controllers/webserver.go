@@ -156,6 +156,26 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 		df.AddEma(period3)
 	}
 
+	// フロントからBBandのリクエストが来た場合のデータをdfに追加
+	bbands := r.URL.Query().Get("bbands")
+	if bbands != "" {
+		strN := r.URL.Query().Get("bbandsN")
+		strK := r.URL.Query().Get("bbandsK")
+
+		// default値の設定(strNが空、またはエラーではない、またはnが0以下の場合)
+		n, err := strconv.Atoi(strN)
+		if strN == "" || err != nil || n < 0 {
+			n = 20
+		}
+
+		k, err := strconv.Atoi(strK)
+		if strK == "" || err != nil || k < 0 {
+			k = 2
+		}
+
+		df.AddBBands(n, float64(k))
+	}
+
 	// 「df」を使用して構造体をJSONに変換
 	js, err := json.Marshal(df)
 	if err != nil {

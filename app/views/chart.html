@@ -22,6 +22,7 @@
     <script type="text/javascript">
         google.charts.load('current', {'packages':['corechart', 'controls']});
 
+        // デフォルト値の定義
         var config = {
             api:{
                 enable: true,
@@ -49,14 +50,27 @@
                 periods: [],
                 values: []
             },
+            bbands: {
+                enable: false,
+                indexes: [],
+                n: 20,
+                k: 2,
+                up: [],
+                mid: [],
+                down: []
+            },
         };
 
         function initConfigValues(){
             config.dataTable.index = 0;
-            config.sma.indexes = [];
-            config.sma.values = [];
-            config.ema.indexes = [];
-            config.ema.values = [];
+            config.sma.indexes     = [];
+            config.sma.values      = [];
+            config.ema.indexes     = [];
+            config.ema.values      = [];
+            config.bbands.indexes  = [];
+            config.bbands.up       = [];
+            config.bbands.mid      = [];
+            config.bbands.down     = [];
         }
 
         function drawChart(dataTable) {
@@ -95,6 +109,7 @@
             var options = mainChart.getOptions();
             var view = mainChart.getView();
 
+            // SMAのデータ読み込み処理
             if (config.sma.enable == true) {
                 for (i = 0; i < config.sma.indexes.length; i++) {
                     options.series[config.sma.indexes[i]] = {type: 'line'};
@@ -102,10 +117,23 @@
                 }
             }
 
+            // EMAのデータ読み込み処理処理
             if (config.ema.enable == true) {
                 for (i = 0; i < config.ema.indexes.length; i++) {
                     options.series[config.ema.indexes[i]] = {type: 'line'};
                     view.columns.push(config.candlestick.numViews + config.ema.indexes[i]);
+                }
+            }
+
+            // BBandsのデータ読み込み処理処理
+            if (config.bbands.enable == true) {
+                for (i = 0; i < config.bbands.indexes.length; i++) {
+                    options.series[config.bbands.indexes[i]] = {
+                        type: 'line',
+                        color: 'blue',
+                        lineWidth: 1
+                    };
+                    view.columns.push(config.candlestick.numViews + config.bbands.indexes[i])
                 }
             }
 
@@ -138,6 +166,7 @@
                 "duration": config.candlestick.duration,
             }
 
+            // SMAのデータ出力準備処理
             if (config.sma.enable == true) {
                 params["sma"] = true;
                 params["smaPeriod1"] = config.sma.periods[0];
@@ -145,11 +174,19 @@
                 params["smaPeriod3"] = config.sma.periods[2];
             }
 
+            // EMAのデータ出力準備処理
             if (config.ema.enable == true) {
                 params["ema"] = true;
                 params["emaPeriod1"] = config.ema.periods[0];
                 params["emaPeriod2"] = config.ema.periods[1];
                 params["emaPeriod3"] = config.ema.periods[2];
+            }
+
+            // BBandのデータ出力準備処理
+            if (config.bbands.enable == true) {
+                params["bbands"]  = true;
+                params["bbandsN"] = config.bbands.n;
+                params["bbandsK"] = config.bbands.k;
             }
 
             $.get("/api/candle/", params).done(function (data) {
@@ -162,6 +199,7 @@
                 dataTable.addColumn('number', 'High');
                 dataTable.addColumn('number', 'Volume');
 
+                // SMAのデータテーブルへのカラム追加処理
                 if (data["smas"] != undefined) {
                     for (i = 0; i < data['smas'].length; i++){
                         var smaData = data['smas'][i];
@@ -173,6 +211,7 @@
                     }
                 }
 
+                // EMAのデータテーブルへのカラム追加処理
                 if (data["emas"] != undefined) {
                     for (i = 0; i < data['emas'].length; i++){
                         var emaData = data['emas'][i];
@@ -184,6 +223,30 @@
                     }
                 }
 
+                // BBandのデータテーブルへのカラム追加処理
+                if (data['bbands'] != undefined) {
+                    var n = data['bbands']['n'];
+                    var k = data['bbands']['k'];
+                    var up = data['bbands']['up'];
+                    var mid = data['bbands']['mid'];
+                    var down = data['bbands']['down'];
+
+                    config.dataTable.index += 1;
+                    config.bbands.indexes[0] = config.dataTable.index;
+                    config.dataTable.index += 1;
+                    config.bbands.indexes[1] = config.dataTable.index;
+                    config.dataTable.index += 1;
+                    config.bbands.indexes[2] = config.dataTable.index;
+
+                    dataTable.addColumn('number', 'BBands Up(' + n + ',' + k + ')');
+                    dataTable.addColumn('number', 'BBands Mid(' + n + ',' + k + ')');
+                    dataTable.addColumn('number', 'BBands Down(' + n + ',' + k + ')');
+
+                    config.bbands.up = up;
+                    config.bbands.mid = mid;
+                    config.bbands.down = down;
+                }
+
                 var googleChartData = [];
                 var candles = data["candles"];
 
@@ -192,6 +255,7 @@
                     var date = new Date(candle.time);
                     var datas = [date, candle.low, candle.open, candle.close, candle.high, candle.volume];
 
+                    // SMAのデータ登録処理
                     if (data["smas"] != undefined) {
                         for (j = 0; j < config.sma.values.length; j++) {
                             if (config.sma.values[j][i] == 0) {
@@ -202,6 +266,7 @@
                         }
                     }
 
+                    // EMAのデータ登録処理
                     if (data["emas"] != undefined) {
                         for (j = 0; j < config.ema.values.length; j++) {
                             if (config.ema.values[j][i] == 0) {
@@ -209,6 +274,27 @@
                             } else {
                                 datas.push(config.ema.values[j][i]);
                             }
+                        }
+                    }
+
+                    // BBandのデータ登録処理
+                    if (data["bbands"] != undefined) {
+                        if (config.bbands.up[i] == 0) {
+                            datas.push(null);
+                        } else {
+                            datas.push(config.bbands.up[i]);
+                        }
+
+                        if (config.bbands.mid[i] == 0) {
+                            datas.push(null);
+                        } else {
+                            datas.push(config.bbands.mid[i]);
+                        }
+
+                        if (config.bbands.down[i] == 0) {
+                            datas.push(null);
+                        } else {
+                            datas.push(config.bbands.down[i]);
                         }
                     }
 
@@ -280,6 +366,24 @@
                 config.ema.periods[2] = this.value;
                 send();
             });
+
+            // BBandのn, Kの値を受け取る
+            $('#inputBBands').change(function() {
+                if (this.checked === true) {
+                    config.bbands.enable = true;
+                } else {
+                    config.bbands.enable = false;
+                }
+                send();
+            });
+            $("#inputBBandsN").change(function() {
+                config.bbands.n = this.value;
+                send();
+            });
+            $("#inputBBandsK").change(function() {
+                config.bbands.k = this.value;
+                send();
+            });
         }
     </script>
 </head>
@@ -293,16 +397,22 @@
 
     <div>
         SMA <input id="inputSma" type="checkbox">
-        Period<input id="inputSmaPeriod1" type="text" value="7" style="width: 15px;">
+        Period <input id="inputSmaPeriod1" type="text" value="7" style="width: 15px;">
         <input id="inputSmaPeriod2" type="text" value="14" style="width: 15px;">
         <input id="inputSmaPeriod3" type="text" value="50" style="width: 15px;">
     </div>
 
     <div>
         EMA <input id="inputEma" type="checkbox">
-        Period<input id="inputEmaPeriod1" type="text" value="7" style="width: 15px;">
+        Period <input id="inputEmaPeriod1" type="text" value="7" style="width: 15px;">
         <input id="inputEmaPeriod2" type="text" value="14" style="width: 15px;">
         <input id="inputEmaPeriod3" type="text" value="50" style="width: 15px;">
+    </div>
+
+    <div>
+        BBands <input id="inputBBands" type="checkbox">
+        N <input id="inputBBandsN" type="text" value="20" style="width: 15px;">
+        K <input id="inputBBandsK" type="text" value="2" style="width: 15px;">
     </div>
 
     <div id="dashboard_div">
