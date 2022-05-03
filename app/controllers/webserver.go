@@ -182,6 +182,20 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 		df.AddIchimoku()
 	}
 
+	// フロントからRSIのリクエストが来た場合のデータをdfに追加
+	rsi := r.URL.Query().Get("rsi")
+	if rsi != "" {
+		strPeriod := r.URL.Query().Get("rsiPeriod")
+		period, err := strconv.Atoi(strPeriod)
+
+		// default値の設定(strPeriodが空、またはエラーではない、またはnが0以下の場合)
+		if strPeriod == "" || err != nil || period < 0 {
+			period = 14
+		}
+
+		df.AddRsi(period)
+	}
+
 	// 「df」を使用して構造体をJSONに変換
 	js, err := json.Marshal(df)
 	if err != nil {

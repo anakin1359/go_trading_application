@@ -16,6 +16,7 @@ type DataFrameCandle struct {
 	Emas          []Ema          `json:"emas,omitempty"`
 	BBands        *BBands        `json:"bbands,omitempty"` // ポインタで設定(空のJSONを返却することがあるため)
 	IchimokuCloud *IchimokuCloud `json:"ichimoku,omitempty"`
+	Rsi           *Rsi           `json:"rsi,omitempty"`
 }
 
 // 単純移動平均線(simple-moving-average)
@@ -46,6 +47,12 @@ type IchimokuCloud struct {
 	SenkouA []float64 `json:"senkoua,omitempty"`
 	SenkouB []float64 `json:"senkoub,omitempty"`
 	Chikou  []float64 `json:"chikou,omitempty"`
+}
+
+// RSI(relative-strength-index)
+type Rsi struct {
+	Period int       `json:"period,omitempty"`
+	Values []float64 `json:"values,omitempty"`
 }
 
 // []Candle配列にデータを格納し、Candle Chartで表示するための設定
@@ -159,6 +166,19 @@ func (df *DataFrameCandle) AddIchimoku() bool {
 			SenkouA: senkouA,
 			SenkouB: senkouB,
 			Chikou:  chikou,
+		}
+		return true
+	}
+	return false
+}
+
+// RSIのデータ取得処理
+func (df *DataFrameCandle) AddRsi(period int) bool {
+	if len(df.Candles) > period {
+		values := talib.Rsi(df.Closes(), period)
+		df.Rsi = &Rsi{
+			Period: period,
+			Values: values,
 		}
 		return true
 	}
