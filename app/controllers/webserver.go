@@ -176,6 +176,12 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 		df.AddBBands(n, float64(k))
 	}
 
+	// フロントからIchimoku Cloudのリクエストが来た場合のデータをdfに追加
+	ichimoku := r.URL.Query().Get("ichimoku")
+	if ichimoku != "" {
+		df.AddIchimoku()
+	}
+
 	// 「df」を使用して構造体をJSONに変換
 	js, err := json.Marshal(df)
 	if err != nil {

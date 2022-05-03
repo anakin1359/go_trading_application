@@ -1,6 +1,7 @@
 package models
 
 import (
+	"gotrading/tradingalgo"
 	"time"
 
 	"github.com/markcheno/go-talib"
@@ -8,12 +9,13 @@ import (
 
 // データフレームの構造体を定義
 type DataFrameCandle struct {
-	ProductCode string        `json:"product_code"`
-	Duration    time.Duration `json:"duration"`
-	Candles     []Candle      `json:"candles"`
-	Smas        []Sma         `json:"smas,omitempty"`
-	Emas        []Ema         `json:"emas,omitempty"`
-	BBands      *BBands       `json:"bbands,omitempty"` // ポインタで設定(空のJSONを返却することがあるため)
+	ProductCode   string         `json:"product_code"`
+	Duration      time.Duration  `json:"duration"`
+	Candles       []Candle       `json:"candles"`
+	Smas          []Sma          `json:"smas,omitempty"`
+	Emas          []Ema          `json:"emas,omitempty"`
+	BBands        *BBands        `json:"bbands,omitempty"` // ポインタで設定(空のJSONを返却することがあるため)
+	IchimokuCloud *IchimokuCloud `json:"ichimoku,omitempty"`
 }
 
 // 単純移動平均線(simple-moving-average)
@@ -35,6 +37,15 @@ type BBands struct {
 	Up   []float64 `json:"up,omitempty"`   // 移動平均線 +Σ
 	Mid  []float64 `json:"mid,omitempty"`  // 移動平均線
 	Down []float64 `json:"down,omitempty"` // 移動平均線 -Σ
+}
+
+// 一目均衡表(ichimoku-cloud)
+type IchimokuCloud struct {
+	Tenkan  []float64 `json:"tenkan,omitempty"`
+	Kijun   []float64 `json:"kijun,omitempty"`
+	SenkouA []float64 `json:"senkoua,omitempty"`
+	SenkouB []float64 `json:"senkoub,omitempty"`
+	Chikou  []float64 `json:"chikou,omitempty"`
 }
 
 // []Candle配列にデータを格納し、Candle Chartで表示するための設定
@@ -131,6 +142,23 @@ func (df *DataFrameCandle) AddBBands(n int, k float64) bool {
 			Up:   up,
 			Mid:  mid,
 			Down: down,
+		}
+		return true
+	}
+	return false
+}
+
+// 一目均衡表(ichimoku-cloud)のデータ取得処理
+func (df *DataFrameCandle) AddIchimoku() bool {
+	tenkanN := 9
+	if len(df.Closes()) >= tenkanN {
+		tenkan, kijun, senkouA, senkouB, chikou := tradingalgo.IchimokuCloud(df.Closes())
+		df.IchimokuCloud = &IchimokuCloud{
+			Tenkan:  tenkan,
+			Kijun:   kijun,
+			SenkouA: senkouA,
+			SenkouB: senkouB,
+			Chikou:  chikou,
 		}
 		return true
 	}
