@@ -1,6 +1,7 @@
 package models
 
 import (
+	"gotrading/tradingalgo"
 	"time"
 
 	"github.com/markcheno/go-talib"
@@ -8,10 +9,13 @@ import (
 
 // データフレームの構造体を定義
 type DataFrameCandle struct {
-	ProductCode string        `json:"product_code"`
-	Duration    time.Duration `json:"duration"`
-	Candles     []Candle      `json:"candles"`
-	Smas        []Sma         `json:"smas,omitempty"`
+	ProductCode   string         `json:"product_code"`
+	Duration      time.Duration  `json:"duration"`
+	Candles       []Candle       `json:"candles"`
+	Smas          []Sma          `json:"smas,omitempty"`
+	Emas          []Ema          `json:"emas,omitempty"`
+	BBands        *BBands        `json:"bbands,omitempty"` // ポインタで設定(空のJSONを返却することがあるため)
+	IchimokuCloud *IchimokuCloud `json:"ichimoku,omitempty"`
 }
 
 // 単純移動平均線(simple-moving-average)
@@ -20,8 +24,31 @@ type Sma struct {
 	Values []float64 `json:"values,omitempty"`
 }
 
-// []Candle配列にデータを格納し、Candle Chartで表示するための設定
+// 指数平滑移動平均(exponential-moving-average)
+type Ema struct {
+	Period int       `json:"period,omitempty"`
+	Values []float64 `json:"values,omitempty"`
+}
 
+// ボリンジャーバンド(bollinger-band)
+type BBands struct {
+	N    int       `json:"n,omitempty"`    // 日数
+	K    float64   `json:"k,omitempty"`    // 標準偏差(Σ)
+	Up   []float64 `json:"up,omitempty"`   // 移動平均線 +Σ
+	Mid  []float64 `json:"mid,omitempty"`  // 移動平均線
+	Down []float64 `json:"down,omitempty"` // 移動平均線 -Σ
+}
+
+// 一目均衡表(ichimoku-cloud)
+type IchimokuCloud struct {
+	Tenkan  []float64 `json:"tenkan,omitempty"`
+	Kijun   []float64 `json:"kijun,omitempty"`
+	SenkouA []float64 `json:"senkoua,omitempty"`
+	SenkouB []float64 `json:"senkoub,omitempty"`
+	Chikou  []float64 `json:"chikou,omitempty"`
+}
+
+// []Candle配列にデータを格納し、Candle Chartで表示するための設定
 // 時刻情報の取得処理を定義
 func (df *DataFrameCandle) Times() []time.Time {
 	// candle chartで出力するための情報をスライスで定義
@@ -88,6 +115,51 @@ func (df *DataFrameCandle) AddSma(period int) bool {
 			Period: period,
 			Values: talib.Sma(df.Closes(), period),
 		})
+		return true
+	}
+	return false
+}
+
+// 指数平滑移動平均(EMA)のデータ取得処理
+func (df *DataFrameCandle) AddEma(period int) bool {
+	if len(df.Candles) > period {
+		df.Emas = append(df.Emas, Ema{
+			Period: period,
+			Values: talib.Ema(df.Closes(), period),
+		})
+		return true
+	}
+	return false
+}
+
+// ボリンジャーバンド(bollinger-band)のデータ取得処理
+func (df *DataFrameCandle) AddBBands(n int, k float64) bool {
+	if n <= len(df.Closes()) {
+		up, mid, down := talib.BBands(df.Closes(), n, k, k, 0)
+		df.BBands = &BBands{
+			N:    n,
+			K:    k,
+			Up:   up,
+			Mid:  mid,
+			Down: down,
+		}
+		return true
+	}
+	return false
+}
+
+// 一目均衡表(ichimoku-cloud)のデータ取得処理
+func (df *DataFrameCandle) AddIchimoku() bool {
+	tenkanN := 9
+	if len(df.Closes()) >= tenkanN {
+		tenkan, kijun, senkouA, senkouB, chikou := tradingalgo.IchimokuCloud(df.Closes())
+		df.IchimokuCloud = &IchimokuCloud{
+			Tenkan:  tenkan,
+			Kijun:   kijun,
+			SenkouA: senkouA,
+			SenkouB: senkouB,
+			Chikou:  chikou,
+		}
 		return true
 	}
 	return false
