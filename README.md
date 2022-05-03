@@ -36,6 +36,7 @@
 |   |   |-- candle.go
 |   |   `-- dfcandle.go
 |   `-- views
+|       |-- chart.html
 |       `-- google.html
 |-- bitflyer
 |   `-- bitflyer.go
@@ -47,6 +48,8 @@
 |-- gotrading.log
 |-- main.go
 |-- stockdata.sql
+|-- tradingalgo
+|   `-- algo.go
 `-- utils
     `-- logging.go
 ```
